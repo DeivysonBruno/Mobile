@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loja_virtual/models/user_model.dart';
+import 'package:loja_virtual/screens/login_screen.dart';
 import 'package:loja_virtual/tiles/drawer_tile.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class CustomDrawer extends StatelessWidget {
 
@@ -45,25 +48,41 @@ class CustomDrawer extends StatelessWidget {
                     Positioned(
                       left: 0.0,
                       bottom: 0.0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("ola,",
-                          style: TextStyle(fontSize: 18.0,
-                          fontWeight: FontWeight.bold),),
+                      child: ScopedModelDescendant<UserModel>(
+                      builder: (context, child, model){
+                        print(model.isLoggedIn());
+                        print(model.userData.toString());
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("Ola, ${!model.isLoggedIn()? "": model.userData['name']}",
+                              style: TextStyle(fontSize: 18.0,
+                                  fontWeight: FontWeight.bold),),
 
-                          GestureDetector(
-                            onTap: (){
+                            GestureDetector(
+                              onTap: (){
+                               if(!model.isLoggedIn()){
+                                 Navigator.of(context).push(
+                                     MaterialPageRoute(builder: (context)=>LoginScreen())
+                                 );
+                               }else{
+                                 model.singOut();
+                               }
 
-                            },
-                            child: Text("Entre ou cadastre-se >",
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold
-                            ),),
-                          )
-                        ],
+
+                              },
+                              child: Text(!model.isLoggedIn()? "Entre ou cadastre-se >":
+                                  "sair"
+                                ,
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold
+                                ),),
+                            )
+                          ],
+                        );
+                      },
                       ),
                     )
                   ],
